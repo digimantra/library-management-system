@@ -1,0 +1,788 @@
+{
+    "info": {
+        "name": "Library Management System API",
+        "description": "Complete API collection for the Django Library Management System",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "access_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "refresh_token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Register User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set('access_token', jsonData.tokens.access);",
+                                    "    pm.collectionVariables.set('refresh_token', jsonData.tokens.refresh);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"testuser@example.com\",\n    \"password\": \"StrongPass123!\",\n    \"password_confirm\": \"StrongPass123!\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/register/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "register",
+                                ""
+                            ]
+                        },
+                        "description": "Register a new user account. Tokens are automatically saved."
+                    }
+                },
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set('access_token', jsonData.access);",
+                                    "    pm.collectionVariables.set('refresh_token', jsonData.refresh);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"StrongPass123!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/login/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login",
+                                ""
+                            ]
+                        },
+                        "description": "Login and get JWT tokens. Tokens are automatically saved."
+                    }
+                },
+                {
+                    "name": "Refresh Token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set('access_token', jsonData.access);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/refresh/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "refresh",
+                                ""
+                            ]
+                        },
+                        "description": "Refresh the access token using the refresh token."
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/logout/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "logout",
+                                ""
+                            ]
+                        },
+                        "description": "Logout by blacklisting the refresh token."
+                    }
+                },
+                {
+                    "name": "Get Profile",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/profile/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "profile",
+                                ""
+                            ]
+                        },
+                        "description": "Get the authenticated user's profile."
+                    }
+                },
+                {
+                    "name": "Update Profile",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"phone_number\": \"1234567890\",\n    \"address\": \"123 Library Street\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/profile/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "profile",
+                                ""
+                            ]
+                        },
+                        "description": "Update the authenticated user's profile."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Books",
+            "item": [
+                {
+                    "name": "List Books",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/books/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "books",
+                                ""
+                            ]
+                        },
+                        "description": "List all books. No authentication required."
+                    }
+                },
+                {
+                    "name": "List Books (with filters)",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/books/?genre=fiction&is_available=true&search=django",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "books",
+                                ""
+                            ],
+                            "query": [
+                                {
+                                    "key": "genre",
+                                    "value": "fiction"
+                                },
+                                {
+                                    "key": "is_available",
+                                    "value": "true"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "django"
+                                }
+                            ]
+                        },
+                        "description": "List books with filters. Available filters: title, author, isbn, genre, is_available, published_after, published_before, min_pages, max_pages, search"
+                    }
+                },
+                {
+                    "name": "Get Book Details",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/books/1/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "books",
+                                "1",
+                                ""
+                            ]
+                        },
+                        "description": "Get details of a specific book by ID."
+                    }
+                },
+                {
+                    "name": "Create Book (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Django for Beginners\",\n    \"author\": \"William Vincent\",\n    \"isbn\": \"1234567890123\",\n    \"page_count\": 300,\n    \"published_date\": \"2023-01-15\",\n    \"genre\": \"technology\",\n    \"description\": \"A beginner-friendly guide to Django web development.\",\n    \"total_copies\": 5\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/books/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "books",
+                                ""
+                            ]
+                        },
+                        "description": "Create a new book. Requires admin authentication."
+                    }
+                },
+                {
+                    "name": "Update Book (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Django for Beginners - Updated Edition\",\n    \"total_copies\": 10\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/books/1/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "books",
+                                "1",
+                                ""
+                            ]
+                        },
+                        "description": "Update a book. Requires admin authentication."
+                    }
+                },
+                {
+                    "name": "Delete Book (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/books/1/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "books",
+                                "1",
+                                ""
+                            ]
+                        },
+                        "description": "Delete a book. Requires admin authentication."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Loans",
+            "item": [
+                {
+                    "name": "Borrow Book",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"book_id\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/loans/borrow/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "loans",
+                                "borrow",
+                                ""
+                            ]
+                        },
+                        "description": "Borrow a book. Requires authentication."
+                    }
+                },
+                {
+                    "name": "Return Book",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"loan_id\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/loans/return/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "loans",
+                                "return",
+                                ""
+                            ]
+                        },
+                        "description": "Return a borrowed book. Requires authentication."
+                    }
+                },
+                {
+                    "name": "Loan History",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/loans/history/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "loans",
+                                "history",
+                                ""
+                            ]
+                        },
+                        "description": "Get user's complete loan history."
+                    }
+                },
+                {
+                    "name": "Loan History (filtered)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/loans/history/?status=active",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "loans",
+                                "history",
+                                ""
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "active"
+                                }
+                            ]
+                        },
+                        "description": "Get user's loan history filtered by status (active, returned, overdue)."
+                    }
+                },
+                {
+                    "name": "Active Loans",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/loans/active/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "loans",
+                                "active",
+                                ""
+                            ]
+                        },
+                        "description": "Get user's currently active loans."
+                    }
+                },
+                {
+                    "name": "All Loans (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/loans/admin/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "loans",
+                                "admin",
+                                ""
+                            ]
+                        },
+                        "description": "Get all loans in the system. Requires admin authentication."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Users (Admin)",
+            "item": [
+                {
+                    "name": "List Users",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/users/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "users",
+                                ""
+                            ]
+                        },
+                        "description": "List all users. Requires admin authentication."
+                    }
+                },
+                {
+                    "name": "Get User Details",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/users/1/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "users",
+                                "1",
+                                ""
+                            ]
+                        },
+                        "description": "Get details of a specific user. Requires admin authentication."
+                    }
+                },
+                {
+                    "name": "Update User",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"is_active\": true,\n    \"profile\": {\n        \"max_books_allowed\": 5,\n        \"is_active_member\": true\n    }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/users/2/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "users",
+                                "2",
+                                ""
+                            ]
+                        },
+                        "description": "Update a user's details. Requires admin authentication."
+                    }
+                },
+                {
+                    "name": "Deactivate User",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{access_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/users/2/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "users",
+                                "2",
+                                ""
+                            ]
+                        },
+                        "description": "Deactivate a user (soft delete). Requires admin authentication."
+                    }
+                }
+            ]
+        }
+    ]
+}

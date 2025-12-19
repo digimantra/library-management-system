@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: gunicorn library_project.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/app/staticfiles
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - DJANGO_ENV=production
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/library_db
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=library_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+
+  # Development service with hot reload
+  web-dev:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DJANGO_ENV=development
+      - SECRET_KEY=dev-secret-key-not-for-production
+    profiles:
+      - dev
+
+volumes:
+  postgres_data:
+  static_volume:
